@@ -55,7 +55,7 @@ def call_claude(system_prompt: str, user_content: list) -> dict:
     client = get_client()
     resp = client.messages.create(
         model=MODEL,
-        max_tokens=8000,
+        max_tokens=16000,
         system=system_prompt,
         messages=[{"role": "user", "content": user_content}],
     )
