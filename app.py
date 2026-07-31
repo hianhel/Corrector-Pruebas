@@ -53,13 +53,16 @@ def file_to_content_block(uploaded_file) -> dict:
 
 def call_claude(system_prompt: str, user_content: list) -> dict:
     client = get_client()
-    resp = client.messages.create(
+    with client.messages.stream(
         model=MODEL,
         max_tokens=32000,
         system=system_prompt,
         messages=[{"role": "user", "content": user_content}],
-    )
-    raw_text = "".join(block.text for block in resp.content if block.type == "text")
+    ) as stream:
+        for _ in stream.text_stream:
+            pass
+        final_message = stream.get_final_message()
+    raw_text = "".join(block.text for block in final_message.content if block.type == "text")
     return extract_json(raw_text)
 
 
